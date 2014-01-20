@@ -1,6 +1,6 @@
 /**
- * Created by Alexey Ostrovsky.
- * Date: 15.01.13
+ * Created by Alexey Ostrovsky, Gennady Tsarinny
+ * Date: 20.01.14
  * Time: 17:02
  */
 "use strict";
@@ -8,13 +8,14 @@
 define([
     "core/options",
     "modules/innerNavigation",
-    "plugins/bubble/lib/jquery.cookie",
-    "modules/css"
-    ], function (options, innerNavigation, cookie, css) {
+    "modules/css"], function (options, innerNavigation, /* cookie,*/ css) {
 
-        var moduleCss = new css("bubble/bubble.css");
+        var moduleCss = new css("bubble/bubble.css"),
+            authorName = localStorage.getItem('authorName') || 'Anonymus',
+            bblPointRadius = 7,
+            bblGodMode = false;
 
-            function Bubble() {
+        function Bubble() {
 
             var _this = this;
 
@@ -32,6 +33,17 @@ define([
             /* вкл/выкл комментирования */
             innerNavigation.addMenuItem(this.resMenuLink, function() {
                 _this.bindEvents();
+
+                // for able to delete a bubble
+                innerNavigation.addMenuItem("Comments God Mode",
+                    function(){
+                        bblGodMode = true;
+                    },
+                    function(){
+                        bblGodMode = false;
+                    }
+                );
+
             }, function() {
                 _this.unbindEvents();
             });
@@ -39,55 +51,87 @@ define([
             // шаблон баббла
             // TODO: переделать на templates
             this.bubbleTemplate = $("" +
-                    "<div class='js-bbl'>" +
-                    "<div class='js-bbl_form'>" +
-                    "<textarea class='js-bbl_it' placeholder='Ваш комментарий'></textarea>" +
-                    "<div class='js-bbl_sep'></div>" +
-                    "<input class='js-bbl_name_it' placeholder='Подпишитесь, чтобы вас узнали'/>" +
-                    "<div class='js-bbl_actions'>" +
-                    "<button class='js-bbl_submit'>Сохранить</button>" +
-                    "<a href='#' class='js-bbl_cancel'>Отмена</a>" +
-                    "</div>" +
-                    "</div>" +
-                    "<div class='js-bbl_info'>" +
-                    "<div class='js-bbl_tx'></div>" +
-                    "<div class='js-bbl_name'></div>" +
-                    "<div class='js-bbl_close'></div>" +
-                    "</div>" +
-                    "</div>"
+                "<div class='js-bbl_w'>" +
+                "<div class='js-bbl'>" +
+                "<div class='js-bbl_form'>" +
+                "<textarea class='js-bbl_it' placeholder='Ваш комментарий'></textarea>" +
+                "<div class='js-bbl_sep'></div>" +
+                "<input class='js-bbl_name_it' placeholder='Подпишитесь, чтобы вас узнали'/>" +
+                "<div class='js-bbl_actions'>" +
+                "<button class='js-bbl_submit'>Save</button>" +
+                "<a href='#' class='js-bbl_cancel'>Cancel</a>" +
+                "</div>" +
+                "</div>" +
+                "<div class='js-bbl_info'>" +
+                "<div class='js-bbl_tx'></div>" +
+                "<div class='js-bbl_name'></div>" +
+                "<div class='js-bbl_close'></div>" +
+                "</div>" +
+                "</div>" +
+                "<div class='js-bbl-point'></div>" +
+                "</div>"
             );
 
-            this.bubbleTemplate.click(function(e){
+            this.bubbleTemplate.on("click", ".js-bbl_close", function(e){
+                e.preventDefault();
+
+                // if we can, delete bbl
+                if ( bblGodMode ) {
+                    var id = $(this).closest(".js-bbl").parent().attr("id");
+                    _this.removeBubble(id);
+
+                } else {
+                    // or just hide
+                    var bblWrp = $(this).closest(".js-bbl_w");
+
+                    bblWrp.find('.js-bbl').removeClass('js-bbl__on');
+                    bblWrp
+                        .find('.js-bbl-point')
+                        .removeClass('__active')
+                    ;
+                }
+
                 e.stopPropagation();
             });
 
-            this.bubbleTemplate.find(".js-bbl_close, .js-bbl_cancel").click(function(e){
+            // delete new bbl
+            this.bubbleTemplate.on("click", ".js-bbl_cancel", function(e){
                 e.preventDefault();
 
-                //var timestamp = $(this).closest(".js-bbl").attr("timestamp");
-                var id = $(this).closest(".js-bbl").attr("id");
-
+                var id = $(this).closest(".js-bbl").parent().attr("id");
                 _this.removeBubble(id);
                 e.stopPropagation();
             });
 
-            /* TODO: вычистить это говнецо */
-            this.bubbleTemplate.find(".js-bbl_submit").click(function(){
-                var bbl = $(this).closest(".js-bbl");
-                var timestamp = bbl.attr("timestamp");
-                var text = bbl.find(".js-bbl_it").val();
-                var name = bbl.find(".js-bbl_name_it").val();
-                var sec = _this.getSectionNum($(this).closest(".source_example"));
-                var x = bbl.css("left");
-                var y = bbl.css("top");
 
-                bbl.find(".js-bbl_form").hide();
-                bbl.find(".js-bbl_tx").text(text);
-                bbl.find(".js-bbl_name").text(name);
-                bbl.find(".js-bbl_info").addClass("js-bbl__show");
-                bbl.addClass("js-bbl__on");
+            this.bubbleTemplate.on("click", ".js-bbl_submit", function(){
+                _this.submitBubble();
+            });
 
-                _this.submitBubble(bbl, sec, x, y, text, name,  timestamp);
+            // click on bubble point
+            this.bubbleTemplate.on("click", '.js-bbl-point', function(e) {
+
+                var infoBbl = $(this).prev(),
+                    infoBblHeight = infoBbl.height(),
+                    offsetFromTop = infoBbl.parent().offset().top - $(window).scrollTop(),
+                    heightHeader = 60;
+
+                // show or hide bbl
+                $(this).toggleClass('__active');
+
+                infoBbl.toggleClass('js-bbl__on');
+
+                if ( infoBbl.hasClass('js-bbl__on') && (infoBblHeight > offsetFromTop - heightHeader) ) {
+                    $('body').animate({
+                        scrollTop: ( $(window).scrollTop() - (infoBblHeight - offsetFromTop + 2 * heightHeader ) )
+                    }, 500);
+                }
+
+                return false;
+            });
+
+            this.bubbleTemplate.click(function(e){
+                e.stopPropagation();
             });
 
         }
@@ -103,30 +147,36 @@ define([
         };
 
         /* рисует один бабл в заданом блоке, с заданными координатами и текстом */
-        Bubble.prototype.drawSingleBubble = function (id, section, x, y, timestamp, text, name) {
-            var _this = this;
+        Bubble.prototype.drawSingleBubble = function (id, section, x, y, timestamp, text, name, firstTimeDrawning) {
+            var _this = this,
+                newBubble = this.bubbleTemplate.clone(true);
 
-            var newBubble = this.bubbleTemplate.clone(true);
-
+            // bbl form wrapper
             newBubble.css({
-                left:x,
-                top:y
+                left: x,
+                top: y
             })
-                    .attr("timestamp", timestamp)
-                    .attr("id", id)
-                    .appendTo(_this.getSectionByNum(section));
-
+                .attr("timestamp", timestamp)
+                .attr("id", id)
+                .appendTo(_this.getSectionByNum(section))
+            ;
 
             if (name === "") {
-                name = $.cookie("commentAuthor");
-                newBubble.find(".js-bbl_name_it").val(name);
+                name = authorName;
             }
 
-            newBubble.find(".js-bbl_name").text(name);
-            newBubble.find(".js-bbl_tx").text(text);
+            if ( !firstTimeDrawning ) {
+                // bbl form
+                newBubble.children('.js-bbl').addClass("js-bbl__on");
 
-            newBubble.find(".js-bbl_it").trigger("focus");
-            newBubble.addClass("js-bbl__on");
+                //bbl point
+                newBubble.children('.js-bbl-point').addClass('__active');
+            }
+
+            newBubble
+                .find(".js-bbl_name").text(name)
+                .end().find(".js-bbl_tx").text(text)
+                .end().find(".js-bbl_it").trigger("focus");
 
             if (text != "") {
                 newBubble.find(".js-bbl_form").hide();
@@ -135,30 +185,68 @@ define([
         };
 
         /* рисует один бабл в заданом блоке, с заданными координатами и текстом */
-        Bubble.prototype.createBubble = function (id, section, x, y, timestamp, text, name) {
-            this.drawSingleBubble(id, section, x, y, timestamp, text, name);
+        Bubble.prototype.createBubble = function (id, section, x, y, timestamp, text, name, firstTimeDrawning) {
+            // close already opened new bubble form
+            this.removeBubble("newBbl");
+
+            // draw new bubble form
+            this.drawSingleBubble(id, section, x, y, timestamp, text, name, firstTimeDrawning);
         };
 
         /* прячем бабл по id */
         Bubble.prototype.hideBubble = function (id) {
             var bbl = $("#" + id);
-            bbl.removeClass("js-bbl__on");
+
+            bbl.find('.js-bbl').removeClass("js-bbl__on");
             setTimeout(function() {
                 bbl.remove();
-            }, 400);
+            }, 300);
         };
 
         /* сабмит бабла */
-        Bubble.prototype.submitBubble = function (bubbleEl, section, x, y, text, name, timestamp) {
-            $.cookie("commentAuthor", name);
+        Bubble.prototype.submitBubble = function () {
+            var bubbleEl = $("#newBbl"),
+                timestamp = bubbleEl.attr("timestamp"),
+                text = bubbleEl.find(".js-bbl_it").val(),
 
-            this.pushBubbleData({section: section, x: x, y: y, text: text, name: name, timestamp: timestamp});
+            //temp
+                name = bubbleEl.find(".js-bbl_name_it").val() ||
+                    localStorage.getItem('authorName') ||
+                    'Anonymus',
 
-            var bbl = {specURI: this.getPathToSpec(),section: section, x: x, y: y, text: text, name: name, timestamp: timestamp};
+                x = bubbleEl.css("left"),
+                y = bubbleEl.css("top");
+
+            var section = this.getSectionNum(bubbleEl.closest(".source_example"));
+
+            bubbleEl.find(".js-bbl_form").hide();
+            bubbleEl.find(".js-bbl_tx").text(text);
+            bubbleEl.find(".js-bbl_name").text(name);
+            bubbleEl.find(".js-bbl_info").addClass("js-bbl__show");
+            bubbleEl.addClass("js-bbl__on");
+
+            if ( name ) localStorage.setItem('authorName', name);
+
+            this.pushBubbleData({
+                section: section,
+                x: x,
+                y: y,
+                text: text,
+                name: name,
+                timestamp: timestamp
+            });
+
+            var bbl = {
+                specURI: this.getPathToSpec(),
+                section: section,
+                x: x,
+                y: y,
+                text: text,
+                name: name,
+                timestamp: timestamp
+            };
 
             this.setBubble(bbl, bubbleEl);
-
-            this.setData();
         };
 
         /* рисует все бабблы из массива бабблов */
@@ -168,7 +256,7 @@ define([
             }
 
             for (var i = 0; i < bubbles.length; i++) {
-                this.drawSingleBubble(bubbles[i]._id, bubbles[i].section, bubbles[i].x, bubbles[i].y, bubbles[i].timestamp, bubbles[i].text, bubbles[i].name);
+                this.drawSingleBubble(bubbles[i]._id, bubbles[i].section, bubbles[i].x, bubbles[i].y, bubbles[i].timestamp, bubbles[i].text, bubbles[i].name, true);
             }
         };
 
@@ -202,33 +290,6 @@ define([
             });
         };
 
-        Bubble.prototype.setData = function (data) {
-/*
-            var _this = this;
-
-            if(typeof data === 'undefined') {
-                data = this.getBubbleData();
-            }
-
-            var sendData = {
-                pathToDataFile:_this.getPathToSpec(),
-                bubbleData: data
-            };
-
-            $.ajax({
-                url: options.pluginsDir + "bubble/setBubbles.php",
-                context: document.body,
-                type: "GET",
-
-                data: {sendData: JSON.stringify(sendData)},
-
-                success: function(data) {
-                    console.log(data._id);
-                }
-            });
-*/
-        };
-
         Bubble.prototype.setBubble = function (data, bubbleEl) {
             var _this = this,
                 id;
@@ -248,25 +309,28 @@ define([
                 }
             });
 
-
         };
 
         Bubble.prototype.removeBubble = function (id) {
+
+            if(id === "newBbl") {
+                this.hideBubble(id);
+                return;
+            }
+
             var _this = this;
 
             $.ajax({
                 url: '/removeBubble',
                 dataType: 'jsonp',
                 jsonpCallback: 'callback',
-                context: _this,
 
                 data: {id : id},
 
                 success: function() {
-                    this.hideBubble(id);
+                    _this.hideBubble(id);
                 }
             });
-
         };
 
         Bubble.prototype.getBubbleData = function () {
@@ -284,31 +348,51 @@ define([
         Bubble.prototype.bindEvents = function () {
             var _this = this;
 
-            this.page.on("click", _this.demoSectionsClass, function(e){
-                e.preventDefault();
+            //opened all bubbles and active points
+            $('.js-bbl').addClass('js-bbl__on');
+            $('.js-bbl-point').addClass('__active');
 
-                var offset = $(this).offset();
+            this.page
 
-                var relX = e.pageX - offset.left;
-                var relY = e.pageY - offset.top;
+                // click on section, add new bbl
+                .on("click.bubbles", _this.demoSectionsClass, function(e){
+                    e.preventDefault();
 
-                var num = _this.getSectionNum($(this));
-                var timestamp = new Date().getTime();
+                    var offset = $(this).offset(),
+                        relX = e.pageX - offset.left - bblPointRadius,
+                        relY = e.pageY - offset.top - bblPointRadius,
+                        num = _this.getSectionNum($(this)),
+                        timestamp = new Date().getTime();
 
-                _this.createBubble('newBbl', num, relX, relY, timestamp, "", "");
-            });
+                    _this.createBubble('newBbl', num, relX, relY, timestamp, "", "", false);
+
+                })
+
+                //use keys for manipulate bbl form
+                .on("keyup.bubbles", function(e) {
+                    e.preventDefault();
+
+                    /* Close new bbl form on ESC */
+                    if ( e.keyCode == 27 ) {
+                        _this.removeBubble("newBbl");
+                    }
+
+                    /* Submit new bbl form on Enter  */
+                    if ( e.keyCode == 13 ) {
+                        _this.submitBubble();
+                    }
+                })
         };
 
         Bubble.prototype.unbindEvents = function () {
-            var _this = this;
-
-            this.page.off("click", _this.demoSectionsClass);
+            this.page.off(".bubbles");
         };
 
         /* init bubble.js */
         if(options.pluginsEnabled.bubble) {
             var bubble = new Bubble();
             bubble.getData();
+
         }
     }
 );
