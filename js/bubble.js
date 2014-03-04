@@ -1,193 +1,250 @@
 /**
  * Created by Alexey Ostrovsky, Gennady Tsarinny
- * Date: 20.01.14
- * Time: 17:02
+ * Date: 04.03.14
+ * Time: 19:57
  */
 "use strict";
 
 define([
+    "jquery",
     "core/options",
+    "modules/module",
     "modules/innerNavigation",
-    "modules/css"], function (options, innerNavigation, /* cookie,*/ css) {
+    "modules/css",
+    "text!plugins/bubble/templates/bubble.html"
+    ], function ($, opt, module, innerNavigation, css, template) {
 
-        var moduleCss = new css("bubble/bubble.css"),
-            authorName = localStorage.getItem('authorName') || 'Anonymus',
-            bblPointRadius = 7,
-            bblGodMode = false;
-
+        var moduleCss = new css("bubble/bubble.css");
+        
         function Bubble() {
 
             var _this = this;
 
-            this.pathName = window.location.pathname;
-            this.bubbleData = [];
-            this.isOn = false;
+            this.options.pluginsOptions.bubble = $.extend(true, {
 
-            // элементы на странице
-            this.demoSections = $(".source_example");
-            this.demoSectionsClass = ".source_example";
-            this.switchButtonClass = ".source_main_nav_ac-toggle-comments";
-            this.page = $(".source_main");
-            this.resMenuLink = 'Comments';
+                bubbleData: [],
+                godMode: false, //temporary
+                pointRadius: 7,
+                bubbleTemplate: $( template ),
+                authorName: localStorage.getItem('authorName') || 'Anonymus',
+                pathName: window.location.pathname,
 
-            /* вкл/выкл комментирования */
-            innerNavigation.addMenuItem(this.resMenuLink, function() {
-                _this.bindEvents();
+                getDataInited: false,
 
-                // for able to delete a bubble
-                innerNavigation.addMenuItem("Comments God Mode",
-                    function(){
-                        bblGodMode = true;
-                    },
-                    function(){
-                        bblGodMode = false;
+                demoSections: $(".source_example"),
+
+                NAMESPACE: 'bubbles',
+                PAGE_CLASS: 'source_main',
+
+                RES_MENU_LINK: 'Comments',
+                RES_MENU_GOD_MODE_LINK: 'Comments God Mode',
+
+                CLASS_BBL_HOOK: 'js-bbl',
+                CLASS_BBL_CLOSE_HOOK: 'js-bbl_close',
+                CLASS_BBL_CANCEL_HOOK: 'js-bbl_cancel',
+                CLASS_BBL_SUBMIT_HOOK: 'js-bbl_submit',
+                CLASS_BBL_POINT_HOOK: 'js-bbl_point',
+
+                CLASS_BBL_SHOW: '__show',
+                CLASS_BBL_POINT_ACTIVE: '__active',
+                CLASS_BBL_AUTHOR: 'source-bbl_author',
+                CLASS_BBL_TXT: 'source-bbl_tx',
+                CLASS_BBL_INPUT: 'source-bbl_it',
+                CLASS_BBL_FORM: 'source-bbl_form',
+                CLASS_BBL_INFO: 'source-bbl_info',
+                CLASS_BBL_NAME: 'source-bbl_name',
+
+                CLASS_BBL_WRAPPER: 'source-bbl_w',
+
+                ID_NEW_BBL: 'newBbl'
+
+            }, this.options.pluginsOptions.bubble);
+
+            var tmplt = this.options.pluginsOptions.bubble.bubbleTemplate,
+                classBblHook = _this.options.pluginsOptions.bubble.CLASS_BBL_HOOK,
+                classBblShow = _this.options.pluginsOptions.bubble.CLASS_BBL_SHOW,
+                classBblPointActive = _this.options.pluginsOptions.bubble.CLASS_BBL_POINT_ACTIVE,
+                classBblWrapper = _this.options.pluginsOptions.bubble.CLASS_BBL_WRAPPER,
+                classBblCloseHook = _this.options.pluginsOptions.bubble.CLASS_BBL_CLOSE_HOOK,
+                classBblCancelHook = _this.options.pluginsOptions.bubble.CLASS_BBL_CANCEL_HOOK,
+                classBblSubmitHook = _this.options.pluginsOptions.bubble.CLASS_BBL_SUBMIT_HOOK,
+                classBblPointHook = _this.options.pluginsOptions.bubble.CLASS_BBL_POINT_HOOK;
+
+            tmplt
+                .on("click", "." + classBblCloseHook, function(e){
+                    e.preventDefault();
+
+                    var godMode = _this.options.pluginsOptions.bubble.godMode;
+
+                    // if we can, delete bbl
+                    if ( godMode ) {
+                        var id = $(this).closest("." + classBblHook).parent().attr("id");
+                        _this.removeBubble(id);
+
+                    } else {
+                        // or just hide
+                        var bblWrp = $(this).closest("." + classBblWrapper);
+
+                        bblWrp.find('.' + classBblHook).removeClass( classBblShow );
+                        bblWrp
+                            .find('.' + classBblPointHook)
+                            .removeClass( classBblPointActive )
+                        ;
                     }
-                );
 
-            }, function() {
-                _this.unbindEvents();
-            });
+                    e.stopPropagation();
+                })
+                .on("click", "." + classBblCancelHook, function(e){
+                    e.preventDefault();
 
-            // шаблон баббла
-            // TODO: переделать на templates
-            this.bubbleTemplate = $("" +
-                "<div class='js-bbl_w'>" +
-                "<div class='js-bbl'>" +
-                "<div class='js-bbl_form'>" +
-                "<textarea class='js-bbl_it' placeholder='Ваш комментарий'></textarea>" +
-                "<div class='js-bbl_sep'></div>" +
-                "<input class='js-bbl_name_it' placeholder='Подпишитесь, чтобы вас узнали'/>" +
-                "<div class='js-bbl_actions'>" +
-                "<button class='js-bbl_submit'>Save</button>" +
-                "<a href='#' class='js-bbl_cancel'>Cancel</a>" +
-                "</div>" +
-                "</div>" +
-                "<div class='js-bbl_info'>" +
-                "<div class='js-bbl_tx'></div>" +
-                "<div class='js-bbl_name'></div>" +
-                "<div class='js-bbl_close'></div>" +
-                "</div>" +
-                "</div>" +
-                "<div class='js-bbl-point'></div>" +
-                "</div>"
-            );
-
-            this.bubbleTemplate.on("click", ".js-bbl_close", function(e){
-                e.preventDefault();
-
-                // if we can, delete bbl
-                if ( bblGodMode ) {
-                    var id = $(this).closest(".js-bbl").parent().attr("id");
+                    var id = $(this).closest('.' + classBblHook).parent().attr('id');
                     _this.removeBubble(id);
+                    e.stopPropagation();
+                })
 
-                } else {
-                    // or just hide
-                    var bblWrp = $(this).closest(".js-bbl_w");
+                .on("click", "." + classBblSubmitHook, function(){
+                    _this.submitBubble();
+                })
 
-                    bblWrp.find('.js-bbl').removeClass('js-bbl__on');
-                    bblWrp
-                        .find('.js-bbl-point')
-                        .removeClass('__active')
-                    ;
+                // click on bubble point
+                .on("click", '.' + classBblPointHook, function(e) {
+
+                    var infoBbl = $(this).prev(),
+                        infoBblHeight = infoBbl.height(),
+                        offsetFromTop = infoBbl.parent().offset().top - $(window).scrollTop(),
+                        heightHeader = 60;
+
+                    // show or hide point
+                    $(this).toggleClass( classBblPointActive );
+
+                    infoBbl.toggleClass( classBblShow );
+
+                    if ( infoBbl.hasClass( classBblShow ) && (infoBblHeight > offsetFromTop - heightHeader) ) {
+                        $('body').animate({
+                           scrollTop: ( $(window).scrollTop() - (infoBblHeight - offsetFromTop + 2 * heightHeader ) )
+                        }, 500);
+                    }
+
+                    return false;
+                 })
+
+                .on("click", function(e){
+                    e.stopPropagation();
+                });
+
+            $(function(){
+                if ( _this.options.pluginsEnabled.bubble ) {
+                    _this.init();
                 }
-
-                e.stopPropagation();
-            });
-
-            // delete new bbl
-            this.bubbleTemplate.on("click", ".js-bbl_cancel", function(e){
-                e.preventDefault();
-
-                var id = $(this).closest(".js-bbl").parent().attr("id");
-                _this.removeBubble(id);
-                e.stopPropagation();
-            });
-
-
-            this.bubbleTemplate.on("click", ".js-bbl_submit", function(){
-                _this.submitBubble();
-            });
-
-            // click on bubble point
-            this.bubbleTemplate.on("click", '.js-bbl-point', function(e) {
-
-                var infoBbl = $(this).prev(),
-                    infoBblHeight = infoBbl.height(),
-                    offsetFromTop = infoBbl.parent().offset().top - $(window).scrollTop(),
-                    heightHeader = 60;
-
-                // show or hide bbl
-                $(this).toggleClass('__active');
-
-                infoBbl.toggleClass('js-bbl__on');
-
-                if ( infoBbl.hasClass('js-bbl__on') && (infoBblHeight > offsetFromTop - heightHeader) ) {
-                    $('body').animate({
-                        scrollTop: ( $(window).scrollTop() - (infoBblHeight - offsetFromTop + 2 * heightHeader ) )
-                    }, 500);
-                }
-
-                return false;
-            });
-
-            this.bubbleTemplate.click(function(e){
-                e.stopPropagation();
             });
 
         }
 
+        Bubble.prototype = module.createInstance();
+        Bubble.prototype.constructor = Bubble;
+
+        Bubble.prototype.init = function () {
+            var getDataInited = this.options.pluginsOptions.bubble.getDataInited;
+
+            if ( !getDataInited ) {
+                this.getData();
+            }
+
+            this.addMenuItem();
+        };
+
+        /* Добавляет пункт меню */
+        Bubble.prototype.addMenuItem = function(){
+            var _this = this,
+                resMenuLink = _this.options.pluginsOptions.bubble.RES_MENU_LINK,
+                resMenuGodModeLink = _this.options.pluginsOptions.bubble.RES_MENU_GOD_MODE_LINK;
+
+            innerNavigation.addMenuItem( resMenuLink,
+                function() {
+                    _this.bindEvents();
+
+                    // for able to delete a bubble ( temporary )
+                    innerNavigation.addMenuItem( resMenuGodModeLink,
+                        function(){
+                            _this.options.pluginsOptions.bubble.godMode = true;
+
+                        },
+                        function(){
+                            _this.options.pluginsOptions.bubble.godMode = false;
+                        }
+                    );
+
+                },
+                function() {
+                    _this.unbindEvents();
+                }
+            );
+        };
+
         /* возвращает n-й по счету section, начиная с нуля */
         Bubble.prototype.getSectionByNum = function (num) {
-            return this.demoSections[num];
+            return this.options.pluginsOptions.bubble.demoSections[num];
         };
 
         /* возвращает порядковый номер section-а по элементу */
         Bubble.prototype.getSectionNum = function (sec) {
-            return this.demoSections.index(sec);
+            return this.options.pluginsOptions.bubble.demoSections.index(sec);
         };
 
         /* рисует один бабл в заданом блоке, с заданными координатами и текстом */
         Bubble.prototype.drawSingleBubble = function (id, section, x, y, timestamp, text, name, firstTimeDrawning) {
             var _this = this,
-                newBubble = this.bubbleTemplate.clone(true);
+                newBubble = _this.options.pluginsOptions.bubble.bubbleTemplate.clone(true),
+                classBblShow = _this.options.pluginsOptions.bubble.CLASS_BBL_SHOW,
+                classBblAuthor = _this.options.pluginsOptions.bubble.CLASS_BBL_AUTHOR,
+                classBblTxt = _this.options.pluginsOptions.bubble.CLASS_BBL_TXT,
+                classBblInput = _this.options.pluginsOptions.bubble.CLASS_BBL_INPUT,
+                classBblForm = _this.options.pluginsOptions.bubble.CLASS_BBL_FORM,
+                classBblInfo = _this.options.pluginsOptions.bubble.CLASS_BBL_INFO,
+                classBblPointActive = _this.options.pluginsOptions.bubble.CLASS_BBL_POINT_ACTIVE,
+
+                classBblHook = _this.options.pluginsOptions.bubble.CLASS_BBL_HOOK,
+                classBblPointHook = _this.options.pluginsOptions.bubble.CLASS_BBL_POINT_HOOK;
 
             // bbl form wrapper
             newBubble.css({
-                left: x,
-                top: y
-            })
+                    left: x,
+                    top: y
+                })
                 .attr("timestamp", timestamp)
                 .attr("id", id)
                 .appendTo(_this.getSectionByNum(section))
             ;
 
             if (name === "") {
-                name = authorName;
+                name = _this.options.pluginsOptions.bubble.authorName;
             }
 
             if ( !firstTimeDrawning ) {
                 // bbl form
-                newBubble.children('.js-bbl').addClass("js-bbl__on");
+                newBubble.children('.' + classBblHook).addClass( classBblShow );
 
                 //bbl point
-                newBubble.children('.js-bbl-point').addClass('__active');
+                newBubble.children('.' + classBblPointHook ).addClass( classBblPointActive);
             }
 
             newBubble
-                .find(".js-bbl_name").text(name)
-                .end().find(".js-bbl_tx").text(text)
-                .end().find(".js-bbl_it").trigger("focus");
+                .find("." + classBblAuthor).text(name)
+                .end().find("." + classBblTxt).text(text)
+                .end().find("." + classBblInput).trigger("focus");
 
             if (text != "") {
-                newBubble.find(".js-bbl_form").hide();
-                newBubble.find(".js-bbl_info").addClass("js-bbl__show");
+                newBubble.find("." + classBblForm).hide();
+                newBubble.find("." + classBblInfo).addClass( classBblShow );
             }
         };
 
         /* рисует один бабл в заданом блоке, с заданными координатами и текстом */
         Bubble.prototype.createBubble = function (id, section, x, y, timestamp, text, name, firstTimeDrawning) {
+            var idNewBbbl = this.options.pluginsOptions.bubble.ID_NEW_BBL;
+
             // close already opened new bubble form
-            this.removeBubble("newBbl");
+            this.removeBubble( idNewBbbl );
 
             // draw new bubble form
             this.drawSingleBubble(id, section, x, y, timestamp, text, name, firstTimeDrawning);
@@ -195,9 +252,11 @@ define([
 
         /* прячем бабл по id */
         Bubble.prototype.hideBubble = function (id) {
-            var bbl = $("#" + id);
+            var bbl = $("#" + id),
+                classBblHook = this.options.pluginsOptions.bubble.CLASS_BBL_HOOK,
+                classBblShow = this.options.pluginsOptions.bubble.CLASS_BBL_SHOW;
 
-            bbl.find('.js-bbl').removeClass("js-bbl__on");
+            bbl.find('.' + classBblHook).removeClass( classBblShow );
             setTimeout(function() {
                 bbl.remove();
             }, 300);
@@ -205,25 +264,38 @@ define([
 
         /* сабмит бабла */
         Bubble.prototype.submitBubble = function () {
-            var bubbleEl = $("#newBbl"),
-                timestamp = bubbleEl.attr("timestamp"),
-                text = bubbleEl.find(".js-bbl_it").val(),
+            var _this = this,
 
-            //temp
-                name = bubbleEl.find(".js-bbl_name_it").val() ||
-                    localStorage.getItem('authorName') ||
-                    'Anonymus',
+                idNewBbbl = _this.options.pluginsOptions.bubble.ID_NEW_BBL,
+                classBblShow = _this.options.pluginsOptions.bubble.CLASS_BBL_SHOW,
+                classBblAuthor = _this.options.pluginsOptions.bubble.CLASS_BBL_AUTHOR,
+                classBblTxt = _this.options.pluginsOptions.bubble.CLASS_BBL_TXT,
+                classBblInput = _this.options.pluginsOptions.bubble.CLASS_BBL_INPUT,
+                classBblForm = _this.options.pluginsOptions.bubble.CLASS_BBL_FORM,
+                classBblName = _this.options.pluginsOptions.bubble.CLASS_BBL_NAME,
+                classBblInfo = _this.options.pluginsOptions.bubble.CLASS_BBL_INFO,
+
+                classSourceExample = _this.options.exampleSectionClass,
+
+                bubbleEl = $("#" + idNewBbbl ),
+                timestamp = bubbleEl.attr("timestamp"),
+                text = bubbleEl.find("." + classBblInput).val(),
+
+                //temp
+                name = bubbleEl.find("." + classBblName).val() ||
+                        localStorage.getItem('authorName') ||
+                        'Anonymus',
 
                 x = bubbleEl.css("left"),
-                y = bubbleEl.css("top");
+                y = bubbleEl.css("top"),
 
-            var section = this.getSectionNum(bubbleEl.closest(".source_example"));
+                section = this.getSectionNum(bubbleEl.closest("." + classSourceExample));
 
-            bubbleEl.find(".js-bbl_form").hide();
-            bubbleEl.find(".js-bbl_tx").text(text);
-            bubbleEl.find(".js-bbl_name").text(name);
-            bubbleEl.find(".js-bbl_info").addClass("js-bbl__show");
-            bubbleEl.addClass("js-bbl__on");
+            bubbleEl.find("." + classBblForm).hide();
+            bubbleEl.find("." + classBblTxt).text(text);
+            bubbleEl.find("." + classBblAuthor).text(name);
+            bubbleEl.find("." + classBblInfo).addClass( classBblShow );
+            bubbleEl.addClass( classBblShow );
 
             if ( name ) localStorage.setItem('authorName', name);
 
@@ -252,7 +324,7 @@ define([
         /* рисует все бабблы из массива бабблов */
         Bubble.prototype.drawBubblesArray = function (bubbles) {
             if(typeof bubbles === 'undefined') {
-                bubbles = this.bubbleData;
+                bubbles = this.options.pluginsOptions.bubble.bubbleData;
             }
 
             for (var i = 0; i < bubbles.length; i++) {
@@ -261,7 +333,8 @@ define([
         };
 
         Bubble.prototype.getPathToSpec = function () {
-            var uri = this.pathName.split("/");
+            var uri = this.options.pluginsOptions.bubble.pathName.split("/");
+
             uri[uri.length - 1] = "";
 
             return uri.join("/");
@@ -288,11 +361,12 @@ define([
                     //console.log(e, m);
                 }
             });
+
+            this.options.pluginsOptions.bubble.getDataInited = true;
         };
 
         Bubble.prototype.setBubble = function (data, bubbleEl) {
-            var _this = this,
-                id;
+            var _this = this;
 
             $.extend(data, {pathToDataFile:_this.getPathToSpec()});
 
@@ -312,13 +386,14 @@ define([
         };
 
         Bubble.prototype.removeBubble = function (id) {
+            var _this = this,
+                idNewBbbl = _this.options.pluginsOptions.bubble.ID_NEW_BBL;
 
-            if(id === "newBbl") {
+
+            if(id === idNewBbbl) {
                 this.hideBubble(id);
                 return;
             }
-
-            var _this = this;
 
             $.ajax({
                 url: '/removeBubble',
@@ -331,50 +406,60 @@ define([
                     _this.hideBubble(id);
                 }
             });
+
         };
 
         Bubble.prototype.getBubbleData = function () {
-            return this.bubbleData;
+            return this.options.pluginsOptions.bubble.bubbleData;
         };
 
         Bubble.prototype.setBubbleData = function (data) {
-            this.bubbleData = data;
+            this.options.pluginsOptions.bubble.bubbleData = data;
         };
 
         Bubble.prototype.pushBubbleData = function (bubble) {
-            this.bubbleData.push(bubble);
+            this.options.pluginsOptions.bubble.bubbleData.push(bubble);
         };
 
         Bubble.prototype.bindEvents = function () {
-            var _this = this;
+            var _this = this,
+                exampleSectionClass = _this.options.exampleSectionClass,
+                pointRadius = _this.options.pluginsOptions.bubble.pointRadius,
+                idNewBbbl = _this.options.pluginsOptions.bubble.ID_NEW_BBL,
+                mainPage =  $('.' + _this.options.mainClass),
+                namespace = _this.options.pluginsOptions.bubble.NAMESPACE,
+                classBblHook = _this.options.pluginsOptions.bubble.CLASS_BBL_HOOK,
+                classBblShow = _this.options.pluginsOptions.bubble.CLASS_BBL_SHOW,
+                classBblPointActive = _this.options.pluginsOptions.bubble.CLASS_BBL_POINT_ACTIVE,
+                classBblPointHook = _this.options.pluginsOptions.bubble.CLASS_BBL_POINT_HOOK;
 
             //opened all bubbles and active points
-            $('.js-bbl').addClass('js-bbl__on');
-            $('.js-bbl-point').addClass('__active');
+            $('.' + classBblHook).addClass( classBblShow );
+            $('.' + classBblPointHook).addClass( classBblPointActive );
 
-            this.page
+            mainPage
 
-                // click on section, add new bbl
-                .on("click.bubbles", _this.demoSectionsClass, function(e){
+                // click on section, adding new bbl
+                .on("click." + namespace, '.' + exampleSectionClass, function(e){
                     e.preventDefault();
 
                     var offset = $(this).offset(),
-                        relX = e.pageX - offset.left - bblPointRadius,
-                        relY = e.pageY - offset.top - bblPointRadius,
-                        num = _this.getSectionNum($(this)),
+                        relX = e.pageX - offset.left - pointRadius,
+                        relY = e.pageY - offset.top - pointRadius,
+                        sectionNum = _this.getSectionNum($(this)),
                         timestamp = new Date().getTime();
 
-                    _this.createBubble('newBbl', num, relX, relY, timestamp, "", "", false);
+                    _this.createBubble( idNewBbbl, sectionNum, relX, relY, timestamp, "", "", false);
 
                 })
 
                 //use keys for manipulate bbl form
-                .on("keyup.bubbles", function(e) {
+                .on("keyup." + namespace, function(e) {
                     e.preventDefault();
 
                     /* Close new bbl form on ESC */
                     if ( e.keyCode == 27 ) {
-                        _this.removeBubble("newBbl");
+                        _this.removeBubble( idNewBbbl );
                     }
 
                     /* Submit new bbl form on Enter  */
@@ -385,14 +470,13 @@ define([
         };
 
         Bubble.prototype.unbindEvents = function () {
-            this.page.off(".bubbles");
+            var _this = this,
+                mainPage =  $('.' + _this.options.mainClass),
+                namespace = _this.options.pluginsOptions.bubble.NAMESPACE;
+
+            mainPage.off('.' + namespace);
         };
 
-        /* init bubble.js */
-        if(options.pluginsEnabled.bubble) {
-            var bubble = new Bubble();
-            bubble.getData();
+    return new Bubble();
 
-        }
-    }
-);
+});
