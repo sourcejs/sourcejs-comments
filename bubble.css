@@ -1,10 +1,10 @@
-.js-bbl_w {
+.source-bbl_w {
 	position: absolute;
 	z-index: 3000;
 	height: 1px;
 	width: 1px;
 }
-.js-bbl_w:hover {
+.source-bbl_w:hover {
 	z-index: 3010;
 }
 
@@ -56,7 +56,7 @@
 	border-top: 8px solid #FDF9E8;
 }
 
-.js-bbl__on {
+.js-bbl.__show {
 	display: block;
 	max-height: 500px;
 	opacity: 1;
@@ -64,7 +64,7 @@
 	transform: translateX(0);
 }
 
-.js-bbl_form {
+.source-bbl_form {
 	max-height: 0;
 	overflow: hidden;
 	-webkit-transition: .3s max-height;
@@ -73,12 +73,8 @@
 	transition: .3s max-height;
 }
 
-.js-bbl__on .js-bbl_form {
+.js-bbl.__show .source-bbl_form {
 	max-height: 200px;
-}
-
-.js-bbl__scroll .js-bbl_info {
-	padding-right: 10px;
 }
 
 .js-bbl_close {
@@ -89,17 +85,17 @@
 	height: 16px;
 
 	opacity: .6;
-	cursor: pointer;
 	background: url(i/ic_close.png) 0 0 no-repeat;
+	cursor: pointer;
 }
 
 
-.js-bbl_sep {
+.source-bbl_sep {
 	border-bottom: 1px dotted #333;
 }
 
-.js-bbl_it,
-.js-bbl_name_it {
+.source-bbl_it,
+.source-bbl_name {
 	box-sizing: border-box;
 	width: 260px;
 	border: 0;
@@ -109,26 +105,26 @@
 
 }
 
-.js-bbl_it:focus,
-.js-bbl_name_it:focus {
+.source-bbl_it:focus,
+.source-bbl_name:focus {
 	outline: 0;
 }
-.js-bbl_it:focus {
+.source-bbl_it:focus {
 	border-radius: 10px;
 	padding: 10px;
 	background: #fff;
 }
 
-.js-bbl_it {
+.source-bbl_it {
 	font-size: 15px;
 	color: #333;
 }
 
-textarea.js-bbl_it {
+textarea.source-bbl_it {
 	height: 4em;
 }
 
-.js-bbl_name_it {
+.source-bbl_name {
 	text-align: right;
 	font-style: italic;
 	color: #666;
@@ -173,12 +169,12 @@ textarea.js-bbl_it {
 	color: #67A9D4;
 }
 
-.js-bbl_actions {
+.source-bbl_actions {
 	margin-top: 20px;
 	margin-bottom: 5px;
 }
 
-.js-bbl_name {
+.source-bbl_author {
 	margin-top: 4px;
 	margin-right: 15px;
 
@@ -192,42 +188,26 @@ textarea.js-bbl_it {
 	border-top: 1px dotted rgba(0, 0, 0, .3);
 }
 
-.js-bbl_info {
+.source-bbl_info {
 	display: none;
 	max-height: 400px;
 	overflow-y: auto;
 }
-.js-bbl_info::-webkit-scrollbar  {
+.source-bbl_info::-webkit-scrollbar  {
 	background: rgba(0,0,0,.08);
 	width: 8px;
 	border-radius: 4px;
 }
-.js-bbl_info::-webkit-scrollbar-thumb {
+.source-bbl_info::-webkit-scrollbar-thumb {
 	background: rgba(0,0,0,.08);
 	border-radius: 4px;
 }
 
-.js-bbl__show {
+.source-bbl_info.__show {
 	display: block;
 }
 
-.js-bbl-point,
-.js-bbl-point:before,
-.js-bbl-point:after {
-	position: absolute;
-	border-radius: 50%;
-
-	cursor: pointer;
-	transition: all .3s;
-}
-
-.js-bbl-point:before,
-.js-bbl-point:after {
-	content: '';
-	top: 50%; left: 50%;
-}
-
-.js-bbl-point {
+.js-bbl_point {
 	z-index: 100;
 
 	width: 14px;
@@ -237,7 +217,23 @@ textarea.js-bbl_it {
 	background: #4792D2;
 }
 
-.js-bbl-point:before {
+.js-bbl_point,
+.js-bbl_point:before,
+.js-bbl_point:after {
+	position: absolute;
+	border-radius: 50%;
+
+	cursor: pointer;
+	transition: all .3s;
+}
+
+.js-bbl_point:before,
+.js-bbl_point:after {
+	content: '';
+	top: 50%; left: 50%;
+}
+
+.js-bbl_point:before {
 	width: 8px;
 	height: 8px;
 	margin-left: -4px;
@@ -246,7 +242,7 @@ textarea.js-bbl_it {
 	background: white;
 }
 
-.js-bbl-point:after {
+.js-bbl_point:after {
 	width: 4px;
 	height: 4px;
 	margin-top: -2px;
@@ -255,35 +251,35 @@ textarea.js-bbl_it {
 	background: #4792D2;
 }
 
-.js-bbl-point:hover,
-.js-bbl-point.__active,
-.js-bbl-point.__disabled {
+.js-bbl_point:hover,
+.js-bbl_point.__active,
+.js-bbl_point.__disabled {
 	width: 28px;
 	height: 28px;
 	margin-left: -14px;
 	margin-top: -14px;
 }
 
-.js-bbl-point:hover:before,
-.js-bbl-point.__active:before,
-.js-bbl-point.__disabled:before {
+.js-bbl_point:hover:before,
+.js-bbl_point.__active:before,
+.js-bbl_point.__disabled:before {
 	width: 16px;
 	height: 16px;
 	margin-left: -8px;
 	margin-top: -8px;
 }
 
-.js-bbl-point:hover:after,
-.js-bbl-point.__active:after,
-.js-bbl-point.__disabled:after{
+.js-bbl_point:hover:after,
+.js-bbl_point.__active:after,
+.js-bbl_point.__disabled:after{
 	width: 8px;
 	height: 8px;
 	margin-left: -4px;
 	margin-top: -4px;
 }
 
-.js-bbl-point.__disabled,
-.js-bbl-point.__disabled:before,
-.js-bbl-point.__disabled:after {
+.js-bbl_point.__disabled,
+.js-bbl_point.__disabled:before,
+.js-bbl_point.__disabled:after {
 	opacity: .7;
 }
