@@ -15,8 +15,5 @@
   "bugs": {
     "url": "https://github.com/sourcejs/sourcejs-bubble/issues"
   },
-  "dependencies": {
-    "sourcejs-bubble": "git://github.com/sourcejs/sourcejs-bubble"
-  },
   "homepage": "https://github.com/sourcejs/sourcejs-bubble"
 }
