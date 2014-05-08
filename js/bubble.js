@@ -1,7 +1,7 @@
 /**
- * Created by Alexey Ostrovsky, Gennady Tsarinny
- * Date: 04.03.14
- * Time: 19:57
+ * Sourcejs plugin for spec comments
+ *
+ * @author Alexey Ostrovsky, Gennady Tsarinny
  */
 "use strict";
 
@@ -11,10 +11,10 @@ define([
     "modules/module",
     "modules/innerNavigation",
     "modules/css",
-    "text!plugins/bubble/templates/bubble.html"
+    "text!npmPlugins/sourcejs-bubble/templates/bubble.html"
 ], function ($, opt, module, innerNavigation, css, template) {
 
-    var moduleCss = new css("bubble/bubble.css");
+    var moduleCss = new css("sourcejs-bubble/bubble.css");
 
     function Bubble() {
 
@@ -61,9 +61,7 @@ define([
         }, this.options.pluginsOptions.bubble);
 
         $(function(){
-            if ( _this.options.pluginsEnabled.bubble ) {
-                _this.init();
-            }
+			_this.init();
         });
 
     }

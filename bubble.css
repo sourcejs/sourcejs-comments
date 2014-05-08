@@ -1,3 +1,9 @@
+/**
+ * Sourcejs plugin for spec comments
+ *
+ * @author Alexey Ostrovsky, Gennady Tsarinny
+ */
+
 .source-bbl_w {
 	position: absolute;
 	z-index: 3000;
