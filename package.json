@@ -1,0 +1,22 @@
+{
+  "name": "sourcejs-bubble",
+  "version": "0.1.0",
+  "description": "SourceJS plugin for spec comments",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sourcejs/sourcejs-bubble.git"
+  },
+  "keywords": [
+    "sourcejs",
+    "plugin",
+    "comments"
+  ],
+  "author": "Gennady Tsarinny",
+  "bugs": {
+    "url": "https://github.com/sourcejs/sourcejs-bubble/issues"
+  },
+  "dependencies": {
+    "sourcejs-bubble": "git://github.com/sourcejs/sourcejs-bubble"
+  },
+  "homepage": "https://github.com/sourcejs/sourcejs-bubble"
+}
