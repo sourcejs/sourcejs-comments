@@ -26,7 +26,7 @@ define([
             godMode: false, //temporary
             pointRadius: 7,
             bubbleTemplate: $( template ),
-            authorName: localStorage.getItem('authorName') || 'Anonymus',
+            authorName: localStorage.getItem('authorName') || '',
             pathName: window.location.pathname,
 
             getDataInited: false,
@@ -61,7 +61,7 @@ define([
         }, this.options.pluginsOptions.bubble);
 
         $(function(){
-			_this.init();
+            _this.init();
         });
 
     }
@@ -79,7 +79,7 @@ define([
         this.addMenuItem();
     };
 
-    /* Добавляет пункт меню */
+    /* add item to sidebar menu */
     Bubble.prototype.addMenuItem = function(){
         var _this = this,
             resMenuLink = _this.options.pluginsOptions.bubble.RES_MENU_LINK,
@@ -108,22 +108,24 @@ define([
         );
     };
 
-    /* возвращает n-й по счету section, начиная с нуля */
+    /* return N-section starting from zero */
     Bubble.prototype.getSectionByNum = function (num) {
         return this.options.pluginsOptions.bubble.demoSections[num];
     };
 
-    /* возвращает порядковый номер section-а по элементу */
+    /* return index of section */
     Bubble.prototype.getSectionNum = function (sec) {
         return this.options.pluginsOptions.bubble.demoSections.index(sec);
     };
 
-    /* рисует один бабл в заданом блоке, с заданными координатами и текстом */
+    /* draw a bbl in section with coordinates and text*/
     Bubble.prototype.drawSingleBubble = function (id, section, x, y, timestamp, text, name, firstTimeDrawning) {
         var _this = this,
             newBubble = _this.options.pluginsOptions.bubble.bubbleTemplate.clone(true),
+            authorName = _this.options.pluginsOptions.bubble.authorName,
             classBblShow = _this.options.pluginsOptions.bubble.CLASS_BBL_SHOW,
             classBblAuthor = _this.options.pluginsOptions.bubble.CLASS_BBL_AUTHOR,
+            classBblName = _this.options.pluginsOptions.bubble.CLASS_BBL_NAME,
             classBblTxt = _this.options.pluginsOptions.bubble.CLASS_BBL_TXT,
             classBblInput = _this.options.pluginsOptions.bubble.CLASS_BBL_INPUT,
             classBblForm = _this.options.pluginsOptions.bubble.CLASS_BBL_FORM,
@@ -144,7 +146,8 @@ define([
         ;
 
         if (name === "") {
-            name = _this.options.pluginsOptions.bubble.authorName;
+            $('.' + classBblName).val( authorName );
+            name = authorName;
         }
 
         if ( !firstTimeDrawning ) {
@@ -166,7 +169,7 @@ define([
         }
     };
 
-    /* рисует один бабл в заданом блоке, с заданными координатами и текстом */
+    /* draw a bbl in section with coordinates and text */
     Bubble.prototype.createBubble = function (id, section, x, y, timestamp, text, name, firstTimeDrawning) {
         var idNewBbbl = this.options.pluginsOptions.bubble.ID_NEW_BBL;
 
@@ -189,11 +192,11 @@ define([
         }, 0);
     };
 
-    /* сабмит бабла */
     Bubble.prototype.submitBubble = function () {
         var _this = this,
 
             idNewBbbl = _this.options.pluginsOptions.bubble.ID_NEW_BBL,
+            authorName = _this.options.pluginsOptions.bubble.authorName,
             classBblShow = _this.options.pluginsOptions.bubble.CLASS_BBL_SHOW,
             classBblAuthor = _this.options.pluginsOptions.bubble.CLASS_BBL_AUTHOR,
             classBblTxt = _this.options.pluginsOptions.bubble.CLASS_BBL_TXT,
@@ -208,10 +211,7 @@ define([
             timestamp = bubbleEl.attr("timestamp"),
             text = bubbleEl.find("." + classBblInput).val(),
 
-        //temp
-            name = bubbleEl.find("." + classBblName).val() ||
-                localStorage.getItem('authorName') ||
-                'Anonymus',
+            name = bubbleEl.find("." + classBblName).val() || authorName,
 
             x = bubbleEl.css("left"),
             y = bubbleEl.css("top"),
@@ -224,7 +224,13 @@ define([
         bubbleEl.find("." + classBblInfo).addClass( classBblShow );
         bubbleEl.addClass( classBblShow );
 
-        if ( name ) localStorage.setItem('authorName', name);
+        // save author to local storage and plugin settings
+        if ( name ) {
+            localStorage.setItem('authorName', name);
+
+            // need for showing existing author name in second bubbles
+            _this.options.pluginsOptions.bubble.authorName = name;
+        }
 
         this.pushBubbleData({
             section: section,
@@ -248,7 +254,7 @@ define([
         this.setBubble(bbl, bubbleEl);
     };
 
-    /* рисует все бабблы из массива бабблов */
+    /* draw all bbl from array of bubbles */
     Bubble.prototype.drawBubblesArray = function (bubbles) {
         if(typeof bubbles === 'undefined') {
             bubbles = this.options.pluginsOptions.bubble.bubbleData;
