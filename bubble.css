@@ -6,18 +6,18 @@
 
 .source-bbl_w {
 	position: absolute;
-	z-index: 3000;
+	z-index: 9000;
 	height: 1px;
 	width: 1px;
-}
-.source-bbl_w:hover {
-	z-index: 3010;
-}
+	}
+	.source-bbl_w:hover {
+		z-index: 9010;
+		}
 
 .js-bbl {
 	position: absolute;
 	bottom: 15px;
-	z-index: 3000;
+	z-index: 9000;
 
 	display: none;
 
@@ -44,31 +44,30 @@
 	transition: .3s opacity, .3s transform;
 
 	-webkit-backface-visibility: hidden;
-}
+	}
+	.js-bbl:after {
+		content: " ";
+		position: absolute;
+		top: 100%; left: 50%;
 
-.js-bbl:after {
-	content: " ";
-	position: absolute;
-	top: 100%; left: 50%;
+		width: 0;
+		height: 0;
+		margin-left: -10px;
 
-	width: 0;
-	height: 0;
-	margin-left: -10px;
+		pointer-events: none;
+		border: solid transparent;
+		border-width: 10px;
+		border-color: rgba(252, 247, 226, 0);
+		border-top: 8px solid #FDF9E8;
+		}
 
-	pointer-events: none;
-	border: solid transparent;
-	border-width: 10px;
-	border-color: rgba(252, 247, 226, 0);
-	border-top: 8px solid #FDF9E8;
-}
-
-.js-bbl.__show {
-	display: block;
-	max-height: 500px;
-	opacity: 1;
-	-webkit-transform: translateX(0);
-	transform: translateX(0);
-}
+	.js-bbl.__show {
+		display: block;
+		max-height: 500px;
+		opacity: 1;
+		-webkit-transform: translateX(0);
+		transform: translateX(0);
+		}
 
 .source-bbl_form {
 	max-height: 0;
@@ -77,11 +76,11 @@
 	-moz-transition: .3s max-height;
 	-o-transition: .3s max-height;
 	transition: .3s max-height;
-}
+	}
 
-.js-bbl.__show .source-bbl_form {
-	max-height: 200px;
-}
+	.js-bbl.__show .source-bbl_form {
+		max-height: 200px;
+		}
 
 .js-bbl_close {
 	position: absolute;
@@ -93,12 +92,11 @@
 	opacity: .6;
 	background: url(i/ic_close.png) 0 0 no-repeat;
 	cursor: pointer;
-}
-
+	}
 
 .source-bbl_sep {
 	border-bottom: 1px dotted #333;
-}
+	}
 
 .source-bbl_it,
 .source-bbl_name {
@@ -108,48 +106,46 @@
 
 	opacity: 1;
 	background-color: transparent;
-
-}
-
-.source-bbl_it:focus,
-.source-bbl_name:focus {
-	outline: 0;
-}
-.source-bbl_it:focus {
-	border-radius: 10px;
-	padding: 10px;
-	background: #fff;
-}
+	}
+	.source-bbl_it:focus,
+	.source-bbl_name:focus {
+		outline: 0;
+		}
 
 .source-bbl_it {
 	font-size: 15px;
 	color: #333;
-}
+	}
+	.source-bbl_it:focus {
+		border-radius: 10px;
+		padding: 10px;
+		background: #fff;
+		}
 
 textarea.source-bbl_it {
 	height: 4em;
-}
+	}
 
 .source-bbl_name {
 	text-align: right;
 	font-style: italic;
 	color: #666;
-}
+	}
 
 .js-bbl ::-webkit-input-placeholder {
 	color: #666;
 	opacity: .5;
-}
+	}
 
 .js-bbl :-moz-placeholder {
 	color: #666;
 	opacity: .5;
-}
+	}
 
 .js-bbl ::-moz-placeholder {
 	color: #666;
 	opacity: .5;
-}
+	}
 
 .js-bbl_submit {
 	line-height: 21px;
@@ -165,7 +161,7 @@ textarea.source-bbl_it {
 	cursor: pointer;
 	color: #fff;
 	background: #67A9D4;
-}
+	}
 
 .js-bbl_cancel:link,
 .js-bbl_cancel:visited,
@@ -173,17 +169,16 @@ textarea.source-bbl_it {
 	margin-left: 10px;
 	font-size: 13px;
 	color: #67A9D4;
-}
+	}
 
 .source-bbl_actions {
 	margin-top: 20px;
 	margin-bottom: 5px;
-}
+	}
 
 .source-bbl_author {
 	margin-top: 4px;
 	margin-right: 15px;
-
 	padding-top: 4px;
 
 	text-align: right;
@@ -192,26 +187,26 @@ textarea.source-bbl_it {
 	font-style: italic;
 	color: #666;
 	border-top: 1px dotted rgba(0, 0, 0, .3);
-}
+	}
 
 .source-bbl_info {
 	display: none;
 	max-height: 400px;
 	overflow-y: auto;
-}
-.source-bbl_info::-webkit-scrollbar  {
-	background: rgba(0,0,0,.08);
-	width: 8px;
-	border-radius: 4px;
-}
-.source-bbl_info::-webkit-scrollbar-thumb {
-	background: rgba(0,0,0,.08);
-	border-radius: 4px;
-}
+	}
+	.source-bbl_info::-webkit-scrollbar  {
+		background: rgba(0,0,0,.08);
+		width: 8px;
+		border-radius: 4px;
+		}
+	.source-bbl_info::-webkit-scrollbar-thumb {
+		background: rgba(0,0,0,.08);
+		border-radius: 4px;
+		}
 
-.source-bbl_info.__show {
-	display: block;
-}
+	.source-bbl_info.__show {
+		display: block;
+		}
 
 .js-bbl_point {
 	z-index: 100;
@@ -221,71 +216,66 @@ textarea.source-bbl_it {
 	margin: -7px 0 0 -7px;
 
 	background: #4792D2;
-}
+	}
+	.js-bbl_point,
+	.js-bbl_point:before,
+	.js-bbl_point:after {
+		position: absolute;
+		border-radius: 50%;
 
-.js-bbl_point,
-.js-bbl_point:before,
-.js-bbl_point:after {
-	position: absolute;
-	border-radius: 50%;
+		cursor: pointer;
+		transition: all .3s;
+		}
+	.js-bbl_point:before,
+	.js-bbl_point:after {
+		content: '';
+		top: 50%; left: 50%;
+		}
+	.js-bbl_point:before {
+		width: 8px;
+		height: 8px;
+		margin-left: -4px;
+		margin-top: -4px;
 
-	cursor: pointer;
-	transition: all .3s;
-}
+		background: white;
+		}
+	.js-bbl_point:after {
+		width: 4px;
+		height: 4px;
+		margin-top: -2px;
+		margin-left: -2px;
 
-.js-bbl_point:before,
-.js-bbl_point:after {
-	content: '';
-	top: 50%; left: 50%;
-}
+		background: #4792D2;
+		}
+	.js-bbl_point:hover,
+	.js-bbl_point.__active,
+	.js-bbl_point.__disabled {
+		width: 28px;
+		height: 28px;
+		margin-left: -14px;
+		margin-top: -14px;
+		}
 
-.js-bbl_point:before {
-	width: 8px;
-	height: 8px;
-	margin-left: -4px;
-	margin-top: -4px;
+	.js-bbl_point:hover:before,
+	.js-bbl_point.__active:before,
+	.js-bbl_point.__disabled:before {
+		width: 16px;
+		height: 16px;
+		margin-left: -8px;
+		margin-top: -8px;
+		}
 
-	background: white;
-}
+	.js-bbl_point:hover:after,
+	.js-bbl_point.__active:after,
+	.js-bbl_point.__disabled:after{
+		width: 8px;
+		height: 8px;
+		margin-left: -4px;
+		margin-top: -4px;
+		}
 
-.js-bbl_point:after {
-	width: 4px;
-	height: 4px;
-	margin-top: -2px;
-	margin-left: -2px;
-
-	background: #4792D2;
-}
-
-.js-bbl_point:hover,
-.js-bbl_point.__active,
-.js-bbl_point.__disabled {
-	width: 28px;
-	height: 28px;
-	margin-left: -14px;
-	margin-top: -14px;
-}
-
-.js-bbl_point:hover:before,
-.js-bbl_point.__active:before,
-.js-bbl_point.__disabled:before {
-	width: 16px;
-	height: 16px;
-	margin-left: -8px;
-	margin-top: -8px;
-}
-
-.js-bbl_point:hover:after,
-.js-bbl_point.__active:after,
-.js-bbl_point.__disabled:after{
-	width: 8px;
-	height: 8px;
-	margin-left: -4px;
-	margin-top: -4px;
-}
-
-.js-bbl_point.__disabled,
-.js-bbl_point.__disabled:before,
-.js-bbl_point.__disabled:after {
-	opacity: .7;
-}
+	.js-bbl_point.__disabled,
+	.js-bbl_point.__disabled:before,
+	.js-bbl_point.__disabled:after {
+		opacity: .7;
+		}
