@@ -218,11 +218,7 @@ define([
 
             section = this.getSectionNum(bubbleEl.closest("." + classSourceExample));
 
-        bubbleEl.find("." + classBblForm).hide();
-        bubbleEl.find("." + classBblTxt).text(text);
-        bubbleEl.find("." + classBblAuthor).text(name);
-        bubbleEl.find("." + classBblInfo).addClass( classBblShow );
-        bubbleEl.addClass( classBblShow );
+
 
         // save author to local storage and plugin settings
         if ( name ) {
@@ -251,7 +247,20 @@ define([
             timestamp: timestamp
         };
 
-        this.setBubble(bbl, bubbleEl);
+        this.setBubble(
+            bbl,
+            bubbleEl,
+            function(){
+                bubbleEl.find("." + classBblForm).hide();
+                bubbleEl.find("." + classBblTxt).text(text);
+                bubbleEl.find("." + classBblAuthor).text(name);
+                bubbleEl.find("." + classBblInfo).addClass( classBblShow );
+                bubbleEl.addClass( classBblShow );
+            },
+            function( data ){
+                console.log('Error: ', data.statusText);
+            });
+
     };
 
     /* draw all bbl from array of bubbles */
@@ -298,23 +307,34 @@ define([
         this.options.pluginsOptions.bubble.getDataInited = true;
     };
 
-    Bubble.prototype.setBubble = function (data, bubbleEl) {
+    Bubble.prototype.setBubble = function (data, bubbleEl, callback, errorHandler) {
         var _this = this;
 
         $.extend(data, {pathToDataFile:_this.getPathToSpec()});
 
-        $.ajax({
-            url: '/setBubble',
-            dataType: 'jsonp',
-            jsonpCallback: 'callback',
-            context: _this,
+        $.when(
 
-            data: data,
+                $.ajax({
+                    url: '/setBubble',
+                    dataType: 'jsonp',
+                    jsonpCallback: 'callback',
+                    timeout: 4000,
+                    context: _this,
 
-            success: function(data) {
-                bubbleEl.attr('id', data._id);
-            }
-        });
+                    data: data,
+
+                    success: function(data) {
+                        bubbleEl.attr('id', data._id);
+                    }
+                })
+
+            )
+            .done(function(){
+                if ( callback && typeof callback == 'function') callback();
+            })
+            .fail(function( data ){
+                if ( errorHandler && typeof errorHandler == 'function') errorHandler( data );
+            });
 
     };
 

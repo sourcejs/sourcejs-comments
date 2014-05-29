@@ -161,6 +161,7 @@ textarea.source-bbl_it {
 	cursor: pointer;
 	color: #fff;
 	background: #67A9D4;
+	outline: none;
 	}
 
 .js-bbl_cancel:link,
