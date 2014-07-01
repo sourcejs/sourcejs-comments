@@ -7,12 +7,11 @@
 
 define([
     "jquery",
-    "core/options",
     "modules/module",
     "modules/innerNavigation",
     "modules/css",
     "text!npmPlugins/sourcejs-bubble/templates/bubble.html"
-], function ($, opt, module, innerNavigation, css, template) {
+], function ($, module, innerNavigation, css, template) {
 
     var moduleCss = new css("sourcejs-bubble/bubble.css");
 
