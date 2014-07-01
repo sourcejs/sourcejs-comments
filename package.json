@@ -1,6 +1,6 @@
 {
   "name": "sourcejs-bubble",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "SourceJS plugin for spec comments",
   "repository": {
     "type": "git",
