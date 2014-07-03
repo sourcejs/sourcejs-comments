@@ -7,9 +7,9 @@
 
 define([
     "jquery",
-    "modules/module",
-    "modules/innerNavigation",
-    "modules/css",
+    "sourceModules/module",
+    "sourceModules/innerNavigation",
+    "sourceModules/css",
     "text!npmPlugins/sourcejs-bubble/templates/bubble.html"
 ], function ($, module, innerNavigation, css, template) {
 
