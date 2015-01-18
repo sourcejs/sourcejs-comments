@@ -72,13 +72,6 @@ mongoose.connect(dbAdress);
 /* /Connect to DB */
 ```
 
-## Updates
-
-**0.3.0** release:
- - markdown syntax support based on [Pagedown converter](https://code.google.com/p/pagedown/);
- - migration from CouchDB to MongoDB;
- - some design improvements
-
 ___
 
 Compatible with SourceJS v0.4+, for v0.3.* use [previous release](https://github.com/sourcejs/sourcejs-comments/archive/v0.0.9.zip).
