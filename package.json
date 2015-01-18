@@ -1,19 +1,19 @@
 {
-  "name": "sourcejs-bubble",
-  "version": "0.1.3",
+  "name": "sourcejs-comments",
+  "version": "0.1.4",
   "description": "SourceJS plugin for spec comments",
   "repository": {
     "type": "git",
-    "url": "https://github.com/sourcejs/sourcejs-bubble.git"
+    "url": "https://github.com/sourcejs/sourcejs-comments.git"
   },
   "keywords": [
     "sourcejs",
     "plugin",
     "comments"
   ],
-  "author": "Gennady Tsarinny",
+  "author": "Gennady Tsarinny, Alexey Ostrovsky",
   "bugs": {
-    "url": "https://github.com/sourcejs/sourcejs-bubble/issues"
+    "url": "https://github.com/sourcejs/sourcejs-comments/issues"
   },
-  "homepage": "https://github.com/sourcejs/sourcejs-bubble"
+  "homepage": "https://github.com/sourcejs/sourcejs-comments"
 }

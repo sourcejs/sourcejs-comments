@@ -1,10 +1,3 @@
-/**
- * Created by Alexey Ostrovsky.
- * Date: 05.08.13
- * Time: 19:12
- */
-
-
 var mongoose = require('mongoose');
 
 // data model

@@ -10,10 +10,10 @@ define([
     "sourceModules/module",
     "sourceModules/innerNavigation",
     "sourceModules/css",
-    "text!node_modules/sourcejs-bubble/assets/templates/bubble.html"
+    "text!node_modules/sourcejs-comments/assets/templates/bubble.html"
 ], function ($, module, innerNavigation, css, template) {
 
-    var moduleCss = new css("/node_modules/sourcejs-bubble/assets/css/bubble.css");
+    var moduleCss = new css("/node_modules/sourcejs-comments/assets/css/bubble.css");
 
     function Bubble() {
 
