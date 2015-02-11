@@ -43,6 +43,7 @@ var setBubble = function(req, res){
 
     bubble.save(function (err, data) {
         if (!err){
+            console.log(arguments);
             res.jsonp(data);
         }
     });
