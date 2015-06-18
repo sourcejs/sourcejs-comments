@@ -19,8 +19,8 @@ define([
 
         var _this = this;
 
+        this.options.pluginsOptions = this.options.plugins || this.options.pluginsOptions || {};
         this.options.pluginsOptions.bubble = $.extend(true, {
-
             bubbleData: [],
             godMode: false, //temporary
             pointRadius: 7,
