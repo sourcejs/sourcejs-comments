@@ -19,7 +19,7 @@ define([
 
         var _this = this;
 
-        this.options.pluginsOptions.bubble = $.extend(true, {
+        this.options.plugins.bubble = $.extend(true, {
 
             bubbleData: [],
             godMode: false, //temporary
@@ -57,7 +57,7 @@ define([
 
             ID_NEW_BBL: 'newBbl'
 
-        }, this.options.pluginsOptions.bubble);
+        }, this.options.plugins.bubble);
 
         $(function(){
             _this.init();
@@ -69,7 +69,7 @@ define([
     Bubble.prototype.constructor = Bubble;
 
     Bubble.prototype.init = function () {
-        var getDataInited = this.options.pluginsOptions.bubble.getDataInited;
+        var getDataInited = this.options.plugins.bubble.getDataInited;
 
         if ( !getDataInited ) {
             this.getData();
@@ -81,8 +81,8 @@ define([
     /* add item to sidebar menu */
     Bubble.prototype.addMenuItem = function(){
         var _this = this,
-            resMenuLink = _this.options.pluginsOptions.bubble.RES_MENU_LINK,
-            resMenuGodModeLink = _this.options.pluginsOptions.bubble.RES_MENU_GOD_MODE_LINK;
+            resMenuLink = _this.options.plugins.bubble.RES_MENU_LINK,
+            resMenuGodModeLink = _this.options.plugins.bubble.RES_MENU_GOD_MODE_LINK;
 
         innerNavigation.addMenuItem( resMenuLink,
             function() {
@@ -92,11 +92,11 @@ define([
                 // for able to delete a bubble ( temporary )
                 innerNavigation.addMenuItem( resMenuGodModeLink,
                     function(){
-                        _this.options.pluginsOptions.bubble.godMode = true;
+                        _this.options.plugins.bubble.godMode = true;
 
                     },
                     function(){
-                        _this.options.pluginsOptions.bubble.godMode = false;
+                        _this.options.plugins.bubble.godMode = false;
                     }
                 );
 
@@ -109,30 +109,30 @@ define([
 
     /* return N-section starting from zero */
     Bubble.prototype.getSectionByNum = function (num) {
-        return this.options.pluginsOptions.bubble.demoSections[num];
+        return this.options.plugins.bubble.demoSections[num];
     };
 
     /* return index of section */
     Bubble.prototype.getSectionNum = function (sec) {
-        return this.options.pluginsOptions.bubble.demoSections.index(sec);
+        return this.options.plugins.bubble.demoSections.index(sec);
     };
 
     /* draw a bbl in section with coordinates and text*/
     Bubble.prototype.drawSingleBubble = function (id, section, x, y, timestamp, text, name, firstTimeDrawning) {
         var _this = this,
-            newBubble = _this.options.pluginsOptions.bubble.bubbleTemplate.clone(true),
-            authorName = _this.options.pluginsOptions.bubble.authorName,
-            classBblShow = _this.options.pluginsOptions.bubble.CLASS_BBL_SHOW,
-            classBblAuthor = _this.options.pluginsOptions.bubble.CLASS_BBL_AUTHOR,
-            classBblName = _this.options.pluginsOptions.bubble.CLASS_BBL_NAME,
-            classBblTxt = _this.options.pluginsOptions.bubble.CLASS_BBL_TXT,
-            classBblInput = _this.options.pluginsOptions.bubble.CLASS_BBL_INPUT,
-            classBblForm = _this.options.pluginsOptions.bubble.CLASS_BBL_FORM,
-            classBblInfo = _this.options.pluginsOptions.bubble.CLASS_BBL_INFO,
-            classBblPointActive = _this.options.pluginsOptions.bubble.CLASS_BBL_POINT_ACTIVE,
+            newBubble = _this.options.plugins.bubble.bubbleTemplate.clone(true),
+            authorName = _this.options.plugins.bubble.authorName,
+            classBblShow = _this.options.plugins.bubble.CLASS_BBL_SHOW,
+            classBblAuthor = _this.options.plugins.bubble.CLASS_BBL_AUTHOR,
+            classBblName = _this.options.plugins.bubble.CLASS_BBL_NAME,
+            classBblTxt = _this.options.plugins.bubble.CLASS_BBL_TXT,
+            classBblInput = _this.options.plugins.bubble.CLASS_BBL_INPUT,
+            classBblForm = _this.options.plugins.bubble.CLASS_BBL_FORM,
+            classBblInfo = _this.options.plugins.bubble.CLASS_BBL_INFO,
+            classBblPointActive = _this.options.plugins.bubble.CLASS_BBL_POINT_ACTIVE,
 
-            classBblHook = _this.options.pluginsOptions.bubble.CLASS_BBL_HOOK,
-            classBblPointHook = _this.options.pluginsOptions.bubble.CLASS_BBL_POINT_HOOK;
+            classBblHook = _this.options.plugins.bubble.CLASS_BBL_HOOK,
+            classBblPointHook = _this.options.plugins.bubble.CLASS_BBL_POINT_HOOK;
 
         // bbl form wrapper
         newBubble.css({
@@ -170,7 +170,7 @@ define([
 
     /* draw a bbl in section with coordinates and text */
     Bubble.prototype.createBubble = function (id, section, x, y, timestamp, text, name, firstTimeDrawning) {
-        var idNewBbbl = this.options.pluginsOptions.bubble.ID_NEW_BBL;
+        var idNewBbbl = this.options.plugins.bubble.ID_NEW_BBL;
 
         // close already opened new bubble form
         this.removeBubble( idNewBbbl );
@@ -182,8 +182,8 @@ define([
     /* прячем бабл по id */
     Bubble.prototype.hideBubble = function (id) {
         var bbl = $("#" + id),
-            classBblHook = this.options.pluginsOptions.bubble.CLASS_BBL_HOOK,
-            classBblShow = this.options.pluginsOptions.bubble.CLASS_BBL_SHOW;
+            classBblHook = this.options.plugins.bubble.CLASS_BBL_HOOK,
+            classBblShow = this.options.plugins.bubble.CLASS_BBL_SHOW;
 
         bbl.find('.' + classBblHook).removeClass( classBblShow );
         setTimeout(function() {
@@ -194,15 +194,15 @@ define([
     Bubble.prototype.submitBubble = function () {
         var _this = this,
 
-            idNewBbbl = _this.options.pluginsOptions.bubble.ID_NEW_BBL,
-            authorName = _this.options.pluginsOptions.bubble.authorName,
-            classBblShow = _this.options.pluginsOptions.bubble.CLASS_BBL_SHOW,
-            classBblAuthor = _this.options.pluginsOptions.bubble.CLASS_BBL_AUTHOR,
-            classBblTxt = _this.options.pluginsOptions.bubble.CLASS_BBL_TXT,
-            classBblInput = _this.options.pluginsOptions.bubble.CLASS_BBL_INPUT,
-            classBblForm = _this.options.pluginsOptions.bubble.CLASS_BBL_FORM,
-            classBblName = _this.options.pluginsOptions.bubble.CLASS_BBL_NAME,
-            classBblInfo = _this.options.pluginsOptions.bubble.CLASS_BBL_INFO,
+            idNewBbbl = _this.options.plugins.bubble.ID_NEW_BBL,
+            authorName = _this.options.plugins.bubble.authorName,
+            classBblShow = _this.options.plugins.bubble.CLASS_BBL_SHOW,
+            classBblAuthor = _this.options.plugins.bubble.CLASS_BBL_AUTHOR,
+            classBblTxt = _this.options.plugins.bubble.CLASS_BBL_TXT,
+            classBblInput = _this.options.plugins.bubble.CLASS_BBL_INPUT,
+            classBblForm = _this.options.plugins.bubble.CLASS_BBL_FORM,
+            classBblName = _this.options.plugins.bubble.CLASS_BBL_NAME,
+            classBblInfo = _this.options.plugins.bubble.CLASS_BBL_INFO,
 
             classSourceExample = _this.options.exampleSectionClass,
 
@@ -224,7 +224,7 @@ define([
             localStorage.setItem('authorName', name);
 
             // need for showing existing author name in second bubbles
-            _this.options.pluginsOptions.bubble.authorName = name;
+            _this.options.plugins.bubble.authorName = name;
         }
 
         this.pushBubbleData({
@@ -265,7 +265,7 @@ define([
     /* draw all bbl from array of bubbles */
     Bubble.prototype.drawBubblesArray = function (bubbles) {
         if(typeof bubbles === 'undefined') {
-            bubbles = this.options.pluginsOptions.bubble.bubbleData;
+            bubbles = this.options.plugins.bubble.bubbleData;
         }
 
         for (var i = 0; i < bubbles.length; i++) {
@@ -274,7 +274,7 @@ define([
     };
 
     Bubble.prototype.getPathToSpec = function () {
-        var uri = this.options.pluginsOptions.bubble.pathName.split("/");
+        var uri = this.options.plugins.bubble.pathName.split("/");
 
         uri[uri.length - 1] = "";
 
@@ -303,7 +303,7 @@ define([
             }
         });
 
-        this.options.pluginsOptions.bubble.getDataInited = true;
+        this.options.plugins.bubble.getDataInited = true;
     };
 
     Bubble.prototype.setBubble = function (data, bubbleEl, callback, errorHandler) {
@@ -339,7 +339,7 @@ define([
 
     Bubble.prototype.removeBubble = function (id) {
         var _this = this,
-            idNewBbbl = _this.options.pluginsOptions.bubble.ID_NEW_BBL;
+            idNewBbbl = _this.options.plugins.bubble.ID_NEW_BBL;
 
 
         if(id === idNewBbbl) {
@@ -362,34 +362,34 @@ define([
     };
 
     Bubble.prototype.getBubbleData = function () {
-        return this.options.pluginsOptions.bubble.bubbleData;
+        return this.options.plugins.bubble.bubbleData;
     };
 
     Bubble.prototype.setBubbleData = function (data) {
-        this.options.pluginsOptions.bubble.bubbleData = data;
+        this.options.plugins.bubble.bubbleData = data;
     };
 
     Bubble.prototype.pushBubbleData = function (bubble) {
-        this.options.pluginsOptions.bubble.bubbleData.push(bubble);
+        this.options.plugins.bubble.bubbleData.push(bubble);
     };
 
     Bubble.prototype.bindEventsForBblTmplt = function(){
         var _this = this,
-            tmplt = _this.options.pluginsOptions.bubble.bubbleTemplate,
-            classBblHook = _this.options.pluginsOptions.bubble.CLASS_BBL_HOOK,
-            classBblShow = _this.options.pluginsOptions.bubble.CLASS_BBL_SHOW,
-            classBblPointActive = _this.options.pluginsOptions.bubble.CLASS_BBL_POINT_ACTIVE,
-            classBblWrapper = _this.options.pluginsOptions.bubble.CLASS_BBL_WRAPPER,
-            classBblCloseHook = _this.options.pluginsOptions.bubble.CLASS_BBL_CLOSE_HOOK,
-            classBblCancelHook = _this.options.pluginsOptions.bubble.CLASS_BBL_CANCEL_HOOK,
-            classBblSubmitHook = _this.options.pluginsOptions.bubble.CLASS_BBL_SUBMIT_HOOK,
-            classBblPointHook = _this.options.pluginsOptions.bubble.CLASS_BBL_POINT_HOOK;
+            tmplt = _this.options.plugins.bubble.bubbleTemplate,
+            classBblHook = _this.options.plugins.bubble.CLASS_BBL_HOOK,
+            classBblShow = _this.options.plugins.bubble.CLASS_BBL_SHOW,
+            classBblPointActive = _this.options.plugins.bubble.CLASS_BBL_POINT_ACTIVE,
+            classBblWrapper = _this.options.plugins.bubble.CLASS_BBL_WRAPPER,
+            classBblCloseHook = _this.options.plugins.bubble.CLASS_BBL_CLOSE_HOOK,
+            classBblCancelHook = _this.options.plugins.bubble.CLASS_BBL_CANCEL_HOOK,
+            classBblSubmitHook = _this.options.plugins.bubble.CLASS_BBL_SUBMIT_HOOK,
+            classBblPointHook = _this.options.plugins.bubble.CLASS_BBL_POINT_HOOK;
 
         tmplt
             .on("click", "." + classBblCloseHook, function(e){
                 e.preventDefault();
 
-                var godMode = _this.options.pluginsOptions.bubble.godMode;
+                var godMode = _this.options.plugins.bubble.godMode;
 
                 // if we can, delete bbl
                 if ( godMode ) {
@@ -451,14 +451,14 @@ define([
     Bubble.prototype.bindEvents = function () {
         var _this = this,
             exampleSectionClass = _this.options.exampleSectionClass,
-            pointRadius = _this.options.pluginsOptions.bubble.pointRadius,
-            idNewBbbl = _this.options.pluginsOptions.bubble.ID_NEW_BBL,
+            pointRadius = _this.options.plugins.bubble.pointRadius,
+            idNewBbbl = _this.options.plugins.bubble.ID_NEW_BBL,
             mainPage =  $('.' + _this.options.mainClass),
-            namespace = _this.options.pluginsOptions.bubble.NAMESPACE,
-            classBblHook = _this.options.pluginsOptions.bubble.CLASS_BBL_HOOK,
-            classBblShow = _this.options.pluginsOptions.bubble.CLASS_BBL_SHOW,
-            classBblPointActive = _this.options.pluginsOptions.bubble.CLASS_BBL_POINT_ACTIVE,
-            classBblPointHook = _this.options.pluginsOptions.bubble.CLASS_BBL_POINT_HOOK;
+            namespace = _this.options.plugins.bubble.NAMESPACE,
+            classBblHook = _this.options.plugins.bubble.CLASS_BBL_HOOK,
+            classBblShow = _this.options.plugins.bubble.CLASS_BBL_SHOW,
+            classBblPointActive = _this.options.plugins.bubble.CLASS_BBL_POINT_ACTIVE,
+            classBblPointHook = _this.options.plugins.bubble.CLASS_BBL_POINT_HOOK;
 
         //opened all bubbles and active points
         $('.' + classBblHook).addClass( classBblShow );
@@ -499,7 +499,7 @@ define([
     Bubble.prototype.unbindEvents = function () {
         var _this = this,
             mainPage =  $('.' + _this.options.mainClass),
-            namespace = _this.options.pluginsOptions.bubble.NAMESPACE;
+            namespace = _this.options.plugins.bubble.NAMESPACE;
 
         mainPage.off('.' + namespace);
     };
