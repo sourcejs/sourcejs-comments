@@ -5,6 +5,8 @@ Comments plugin for [SourceJS](http://sourcejs.com) for commenting Spec examples
 
 ![image](http://d.pr/i/kISN+)
 
+Compatible with SourceJS v.0.5.6+.
+
 ___
 
 To install, run npm in `sourcejs/user` folder:
@@ -13,11 +15,11 @@ To install, run npm in `sourcejs/user` folder:
 npm install sourcejs-comments --save
 ```
 
-Then run Grunt update in SourceJS root:
+Then run build command in SourceJS root:
 
 ```
 cd sourcejs
-grunt update
+npm run build
 ```
 
 After installation, all your Specs pages will have "Add description" tumbler in inner menu, that will active the plugin.
@@ -28,7 +30,7 @@ After installation, all your Specs pages will have "Add description" tumbler in 
 
 As [MongoDB](http://www.mongodb.org/) is not essential dependency for SourceJS, you must install it separately, to work with plugins that expect data storage.
 
-[Install it](http://docs.mongodb.org/manual/installation/), run locally or remotely and configure your SourceJS in `sourcejs/user/options.js`:
+[Install MongoDB locally](http://docs.mongodb.org/manual/installation/) or get it from [MongoLab](https://mongolab.com) and configure your SourceJS in `sourcejs/user/options.js`:
 
 ```json
 core: {
@@ -72,6 +74,6 @@ mongoose.connect(dbAdress);
 /* /Connect to DB */
 ```
 
-___
+## Legacy versions
 
-Compatible with SourceJS v0.4+, for v0.3.* use [previous release](https://github.com/sourcejs/sourcejs-comments/archive/v0.0.9.zip).
+For SourceJS v0.3.* use older plugin version [0.0.x](https://github.com/sourcejs/sourcejs-comments/archive/v0.0.9.zip).

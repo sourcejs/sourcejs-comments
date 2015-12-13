@@ -4,6 +4,11 @@
  * @author Alexey Ostrovsky, Gennady Tsarinny
  */
 
+.source-bbl_container {
+	position: relative;
+	z-index: 9000;
+}
+
 .source-bbl_w {
 	position: absolute;
 	z-index: 9000;

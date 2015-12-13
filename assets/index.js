@@ -53,6 +53,7 @@ define([
             CLASS_BBL_INFO: 'source-bbl_info',
             CLASS_BBL_NAME: 'source-bbl_name',
 
+            CLASS_BBL_CONTAINER: 'source-bbl_container',
             CLASS_BBL_WRAPPER: 'source-bbl_w',
 
             ID_NEW_BBL: 'newBbl'
@@ -117,6 +118,23 @@ define([
         return this.options.pluginsOptions.bubble.demoSections.index(sec);
     };
 
+    Bubble.prototype.getSectionCommentContainer = function (num) {
+        var opts = this.options.pluginsOptions.bubble;
+        var $section = $(this.getSectionByNum(num));
+        var $container;
+
+        if (!$section || $section.length === 0) return;
+
+        if ($section.prev().hasClass(opts.CLASS_BBL_CONTAINER)) {
+            $container = $section.prev();
+        } else {
+            $container = $('<div class="source_clean '+ opts.CLASS_BBL_CONTAINER +'"></div>');
+            $section.before($container);
+        }
+
+        return $container;
+    };
+
     /* draw a bbl in section with coordinates and text*/
     Bubble.prototype.drawSingleBubble = function (id, section, x, y, timestamp, text, name, firstTimeDrawning) {
         var _this = this,
@@ -134,6 +152,10 @@ define([
             classBblHook = _this.options.pluginsOptions.bubble.CLASS_BBL_HOOK,
             classBblPointHook = _this.options.pluginsOptions.bubble.CLASS_BBL_POINT_HOOK;
 
+        var bubleContainer = _this.getSectionCommentContainer(section);
+
+        if (!bubleContainer) return;
+
         // bbl form wrapper
         newBubble.css({
             left: x,
@@ -141,7 +163,7 @@ define([
         })
             .attr("timestamp", timestamp)
             .attr("id", id)
-            .appendTo(_this.getSectionByNum(section))
+            .appendTo(bubleContainer)
         ;
 
         if (name === "") {
@@ -215,9 +237,7 @@ define([
             x = bubbleEl.css("left"),
             y = bubbleEl.css("top"),
 
-            section = this.getSectionNum(bubbleEl.closest("." + classSourceExample));
-
-
+            section = this.getSectionNum(bubbleEl.parent().next("." + classSourceExample));
 
         // save author to local storage and plugin settings
         if ( name ) {
