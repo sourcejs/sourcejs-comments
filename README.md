@@ -7,7 +7,15 @@ Comments plugin for [SourceJS](http://sourcejs.com) for commenting Spec examples
 
 Compatible with SourceJS v.0.5.6+.
 
-___
+## Looking for maintainers
+
+Because of the limited resources capacity, SourceJS team currently can't invest time into this project. We will continue supporting the project, providing fixes for only critical issues, but new feature development will rely only on the community efforts.
+
+If you want to maintain the plugin, please drop a note at r@rhr.me.
+
+As an altenrative service, we can recommend using third party commenting plugins like [TrackDuck](https://app.trackduck.com/auth/ref/637dd630-a1b2-11e5-a099-5b1f885a8fb2).
+
+## Install
 
 To install, run npm in `sourcejs/user` folder:
 
